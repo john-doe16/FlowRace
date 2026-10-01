@@ -1,0 +1,25 @@
+{
+  "name": "flow-race",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Online Flow-style puzzle racing: queue up and solve more boards than your opponent before the clock runs out.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "build": "esbuild client/main.ts --bundle --format=esm --target=es2022 --sourcemap --outfile=public/app.js",
+    "start": "npm run build && node server/main.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/ws": "^8.18.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

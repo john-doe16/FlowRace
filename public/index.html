@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Flow Race</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" aria-label="flow race"><span class="f">f</span><span class="l">l</span><span class="o">o</span><span class="w">w</span><span class="race">race</span></div>
+    <div class="me" id="me"></div>
+    <button class="icon-btn" id="mute-btn" type="button" aria-label="Mute sounds" title="Sound on/off (M)"></button>
+    <div class="conn" id="conn" data-status="connecting"><i></i><span>Connecting…</span></div>
+  </header>
+
+  <main>
+    <!-- Home. On wide screens these panels form a two-column dashboard (see style.css). -->
+    <section class="screen" id="screen-home">
+      <div class="panel profile">
+        <label class="field">
+          <span class="label">Your name</span>
+          <input id="name-input" maxlength="16" autocomplete="nickname" spellcheck="false">
+        </label>
+        <div class="stats">
+          <div><span class="label">Rating</span><strong id="stat-rating">—</strong></div>
+          <div><span class="label">Rank</span><strong id="stat-rank">—</strong></div>
+          <div><span class="label" title="Ranked games played">Games</span><strong id="stat-games">0</strong></div>
+        </div>
+      </div>
+
+      <div class="panel play">
+        <div class="panel-head">
+          <h2>Play</h2>
+          <span class="hint" id="home-mode-hint">Solve the most boards before time runs out</span>
+        </div>
+        <span class="label">Mode</span>
+        <div class="segmented" id="home-modes"></div>
+        <span class="label">Board</span>
+        <div class="option-grid" id="home-sizes"></div>
+        <span class="label">Time</span>
+        <div class="segmented" id="home-durations"></div>
+        <div class="play-buttons" id="play-buttons">
+          <button class="primary big" id="queue-btn">Find ranked match <kbd>F</kbd></button>
+          <button class="secondary big practice-btn" id="practice-btn">
+            <span>Practice solo <kbd>P</kbd></span>
+            <small id="practice-best"></small>
+          </button>
+        </div>
+        <div class="queue-status" id="queue-status" hidden>
+          <div class="spinner"></div>
+          <div class="queue-text">
+            <strong id="queue-label"></strong>
+            <span id="queue-timer">0:00</span>
+          </div>
+          <button class="ghost" id="cancel-queue">Cancel <kbd>Esc</kbd></button>
+        </div>
+      </div>
+
+      <div class="panel friends">
+        <div class="panel-head">
+          <h2>Race friends</h2>
+          <span class="hint">Private, unranked, up to 4</span>
+        </div>
+        <div class="friends-row">
+          <button class="secondary" id="create-lobby">Create lobby</button>
+          <form class="join-form" id="join-form">
+            <input id="join-code" maxlength="6" placeholder="CODE" autocomplete="off" spellcheck="false" aria-label="Lobby code">
+            <button class="secondary" type="submit">Join</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel ranks">
+        <div class="panel-head">
+          <h2>Leaderboard</h2>
+          <span class="hint" id="lb-you"></span>
+        </div>
+        <ol class="leaderboard" id="leaderboard"></ol>
+      </div>
+
+      <details class="panel rules">
+        <summary>How it works</summary>
+        <ul>
+          <li>Everyone gets the <b>same boards in the same order</b>. Solve one and the next appears instantly.</li>
+          <li>Connect each pair of dots and <b>fill every square</b>. Pipes can't cross.</li>
+          <li>Bigger boards are worth more: 5×5 = 1 point up to 11×11 = 7 points.</li>
+          <li><b>Skip</b> a board you're stuck on, at the cost of a 5-second lockout.</li>
+          <li>Most points when the clock hits zero wins. Ties go to whoever got there first.</li>
+          <li><b>Practice</b> is a solo run against your own best score. It doesn't affect your rating.</li>
+          <li><b>Tug of war</b>: each solve pulls the rope your way. Get three boards ahead and you win on the spot.</li>
+          <li><b>Knockout</b> (lobbies): one board per round, the last player to solve it is out.</li>
+          <li><b>Twists</b> (lobbies): Fog hides dots away from your cursor, Memory turns dots white after 3s, Spin rotates the board, Mirror flips your controls.</li>
+        </ul>
+        <p class="shortcuts">
+          Keys: <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> clear · <kbd>S</kbd> skip · <kbd>M</kbd> mute
+        </p>
+      </details>
+    </section>
+
+    <!-- Private lobby -->
+    <section class="screen" id="screen-lobby" hidden>
+      <div class="panel lobby-code">
+        <span class="label">Lobby code: share it with friends</span>
+        <div class="code-row">
+          <div class="code" id="lobby-code"></div>
+          <button class="ghost" id="copy-code">Copy invite link</button>
+        </div>
+      </div>
+      <div class="panel lobby-players">
+        <span class="label">Players</span>
+        <ul class="members" id="lobby-members"></ul>
+      </div>
+      <div class="panel lobby-settings">
+        <span class="label" id="lobby-options-label">Settings</span>
+        <div class="segmented" id="lobby-modes"></div>
+        <p class="mode-hint" id="lobby-mode-hint"></p>
+        <span class="label">Board</span>
+        <div class="option-grid" id="lobby-sizes"></div>
+        <span class="label" id="lobby-time-label">Time</span>
+        <div class="segmented" id="lobby-durations"></div>
+        <span class="label">Twists</span>
+        <div class="twists" id="lobby-twists"></div>
+      </div>
+      <div class="lobby-actions">
+        <button class="ghost" id="leave-lobby">Leave</button>
+        <button class="primary big" id="ready-btn">Ready</button>
+      </div>
+      <p class="hint center lobby-hint" id="lobby-hint"></p>
+    </section>
+
+    <!-- Race -->
+    <section class="screen" id="screen-match" hidden>
+      <div class="hud">
+        <div class="hud-block">
+          <span class="label">Score</span>
+          <strong id="hud-score">0</strong>
+        </div>
+        <div class="hud-timer" id="hud-timer">2:00</div>
+        <div class="hud-block right">
+          <span class="label" id="hud-board-label">Board</span>
+          <strong id="hud-board">1</strong>
+        </div>
+      </div>
+      <div class="opponents" id="opponents"></div>
+      <div class="board-wrap">
+        <div class="board-box">
+          <canvas id="board"></canvas>
+          <div class="overlay" id="overlay" hidden><div class="overlay-vs" id="overlay-vs"></div><div class="overlay-big" id="overlay-big"></div><div class="overlay-small" id="overlay-small"></div></div>
+        </div>
+      </div>
+      <div class="board-info">
+        <span id="board-flows">0/0 flows</span>
+        <span id="board-worth"></span>
+        <span id="board-fill">0%</span>
+      </div>
+      <div class="match-actions">
+        <button class="secondary" id="skip-btn">Skip (−5s) <kbd>S</kbd></button>
+        <div class="action-row">
+          <button class="ghost" id="undo-btn">Undo <kbd>Ctrl Z</kbd></button>
+          <button class="ghost" id="clear-btn">Clear <kbd>C</kbd></button>
+        </div>
+        <button class="ghost" id="end-btn" hidden>End practice</button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="screen" id="screen-result" hidden>
+      <div class="result-head">
+        <div class="result-title" id="result-title"></div>
+        <div class="result-sub" id="result-sub"></div>
+      </div>
+      <div class="panel">
+        <ol class="standings" id="standings"></ol>
+      </div>
+      <div class="result-actions" id="result-actions"></div>
+    </section>
+  </main>
+
+  <div class="banner" id="banner" hidden></div>
+  <div class="toast" id="toast" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
